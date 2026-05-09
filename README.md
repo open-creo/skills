@@ -7,7 +7,7 @@ Open skills for agentic coding tools, distributed through the Skills CLI and rea
 Public install command, matching the style skills.sh displays:
 
 ```bash
-npx skills add https://github.com/sjunepark/open-creo --skill darty
+npx skills add open-creo/open-creo --skill darty
 ```
 
 For local development before the repository is published or indexed:
@@ -27,7 +27,7 @@ skills.sh generates the skill page's install command from the GitHub source and 
 
 Use the Darty CLI for read-only Korean DART disclosure search and retrieval. The CLI is published on npm as `@sjunepark/darty`; agents should inspect Darty's own help output for current commands, menus, options, and output shape instead of relying on a copied manual in this repository.
 
-Learn more after indexing: <https://skills.sh/sjunepark/open-creo/darty>
+Learn more on skills.sh: <https://skills.sh/open-creo/open-creo/darty>
 
 ## Layout
 
