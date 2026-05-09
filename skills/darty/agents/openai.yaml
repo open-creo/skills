@@ -1,0 +1,4 @@
+interface:
+  display_name: "Darty"
+  short_description: "Use the Darty CLI for read-only Korean DART disclosure search and retrieval."
+  default_prompt: "Use $darty when you need current Korean DART disclosure data through the Darty CLI. Treat Darty's own help output as the source of truth for available menus, commands, options, and output shape. Prefer the local ../darty checkout when available; otherwise use the installed or package-runner CLI from npm package @sjunepark/darty. Do not rely on this skill as a static command manual."
