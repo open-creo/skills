@@ -21,7 +21,7 @@ Use this skill when the user needs to search, inspect, or summarize Korean corpo
 
 Darty is a CLI that turns DART disclosure search and report-viewing screens into structured output that agents can inspect, summarize, and cite in follow-up work.
 
-The CLI source is available in this workspace at `../darty` when that sibling checkout exists. The CLI is published on npm as `@sjunepark/darty` and also distributed as native standalone binaries from the public `open-creo/open-creo` GitHub Releases page.
+The CLI source is available in this workspace at `../darty` when that sibling checkout exists. The CLI is published on npm as `@sjunepark/darty` and also distributed as native standalone binaries from the public `open-creo/skills` GitHub Releases page.
 
 ## Installing or Finding Darty
 
@@ -47,7 +47,7 @@ If Node is unavailable or the environment should not depend on Node/Bun, use the
 # darty-v<version>-linux-arm64.tar.gz
 # darty-v<version>-linux-x64.tar.gz
 # darty-v<version>-windows-x64.zip
-https://github.com/open-creo/open-creo/releases
+https://github.com/open-creo/skills/releases
 ```
 
 The native binary does not require users to install Node or Bun.
@@ -60,7 +60,7 @@ When using this skill:
 
 - Prefer the local sibling checkout at `../darty` when it is available in the workspace.
 - Otherwise use the installed or package-runner Darty CLI from npm package `@sjunepark/darty` when Node/npm are available.
-- If Node/npm are unavailable, download and run the matching native binary from `open-creo/open-creo` GitHub Releases.
+- If Node/npm are unavailable, download and run the matching native binary from `open-creo/skills` GitHub Releases.
 - Start by asking Darty itself for help, then inspect the help for any relevant menu or command before running a real query.
 - Do not assume a command, option, or field exists just because it existed in a previous session.
 - Keep queries read-only and as narrow as the user's request allows.
