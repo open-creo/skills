@@ -8,6 +8,7 @@ Public install command, matching the style skills.sh displays:
 
 ```bash
 npx skills add open-creo/skills --skill darty
+npx skills add open-creo/skills --skill kasb
 ```
 
 For local development before the repository is published or indexed:
@@ -15,6 +16,7 @@ For local development before the repository is published or indexed:
 ```bash
 npx skills add . --list
 npx skills add . --skill darty
+npx skills add . --skill kasb
 ```
 
 `bunx skills ...` works too if you prefer Bun.
@@ -28,6 +30,12 @@ skills.sh generates the skill page's install command from the GitHub source and 
 Use the Darty CLI for read-only Korean DART disclosure search and retrieval. The CLI is published on npm as `@sjunepark/darty`; agents should inspect Darty's own help output for current commands, menus, options, and output shape instead of relying on a copied manual in this repository.
 
 Learn more on skills.sh: <https://skills.sh/open-creo/skills/darty>
+
+### kasb
+
+Use the KASB CLI for read-only Korean accounting standards and KASB Q&A search and retrieval. The CLI is published on npm as `@sjunepark/kasb`; agents should inspect KASB's own help output for current commands, options, and output shape instead of relying on a copied manual in this repository.
+
+Learn more on skills.sh: <https://skills.sh/open-creo/skills/kasb>
 
 ## Layout
 
