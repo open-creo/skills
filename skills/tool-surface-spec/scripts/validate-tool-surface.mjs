@@ -334,7 +334,7 @@ const validateToolset = async (reporter, toolsetModule, args) => {
   if (hasString(toolset, "description")) {
     reporter.check(
       !hasHowToDescriptionCue(toolset.description),
-      "toolset description is purpose-only, not usage instructions",
+      "top-level toolset description is purpose-only, not usage instructions",
     );
   }
 
@@ -480,7 +480,7 @@ const validatePi = async (reporter, piModule, args, toolset) => {
   if (hasString(piTool, "description")) {
     reporter.check(
       !hasHowToDescriptionCue(piTool.description),
-      "Pi tool description is purpose-only, not usage instructions",
+      "top-level Pi tool description is purpose-only, not usage instructions",
     );
   }
   reporter.check(isRecord(piTool.parameters), "Pi tool has parameters object");

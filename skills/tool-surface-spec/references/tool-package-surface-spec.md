@@ -8,6 +8,8 @@ This spec defines a project-neutral shape for packages that expose deterministic
 2. a runtime-neutral TypeScript toolset SDK,
 3. a Pi tool adapter/extension.
 
+The purpose-only description rule in this spec is intentionally narrow: it applies to top-level package/toolset descriptions and top-level host-tool descriptions, especially the single Pi extension tool description. It does not apply to operation-level or parameter-level guidance.
+
 The package should feel usable by humans, scripts, Pi agents, web-agent hosts, and future adapters without copying capability logic. Compatibility is defined at the package surface and outer output-envelope level; each package still defines its own domain operations and `result` payload schemas.
 
 ## Non-goals
@@ -53,7 +55,8 @@ Naming guidance:
 All user-facing messages should be written in Korean. This includes:
 
 - toolset, operation, and host-tool labels,
-- toolset, operation, and host-tool descriptions,
+- top-level toolset and host-tool descriptions,
+- operation descriptions and internal agent-native function tool descriptions,
 - `help()` and `command_help` prose,
 - CLI `--help` and command help text,
 - Pi `content` text, `promptGuidelines`, parameter descriptions, and presentation text,
@@ -124,7 +127,7 @@ export type Toolset = {
 
 Required behavior:
 
-- `label` and `description` are user-facing Korean strings. The top-level `Toolset.description` is a concise purpose statement: what the toolset is for and, if useful, its evidence/safety posture. Do not put call sequences, action names, parameter hints, or other how-to-use instructions in this field; put those in `help()`, operation specs, prompt snippets, guidelines, or parameter descriptions. This purpose-only rule applies to the top-level toolset description, not to every field named `description` elsewhere.
+- `label` and `description` are user-facing Korean strings. The top-level `Toolset.description` is a concise purpose statement: what the toolset is for and, if useful, its evidence/safety posture. Do not put call sequences, action names, parameter hints, or other how-to-use instructions in this field; put those in `help()`, operation specs, prompt snippets, guidelines, parameter descriptions, or internal agent-native function tool descriptions. This purpose-only rule applies to the top-level toolset description, not to every field named `description` elsewhere.
 - `help()` is network-free and lists what the toolset can do.
 - `listOperations()` is network-free and returns canonical operation summaries.
 - `getCommandHelp(name)` is network-free and returns the operation contract.
@@ -159,7 +162,8 @@ Rules:
 - Examples should be valid inputs that can be used by docs, tests, and agent prompts.
 - Limitations should state source drift, auth gaps, partial coverage, and known unsupported cases.
 - Result schemas should preserve enough structure for downstream automation.
-- Operation specs, input JSON Schemas, parameter descriptions, `oneOf` branch descriptions, and result-field descriptions may be instructional. Preserve concrete locator provenance, mutually exclusive-field rules, rejected identifier types, and cross-operation references that help an agent call the operation correctly; do not rewrite them into vague purpose-only copy.
+- Operation specs, input JSON Schemas, property and parameter descriptions, `oneOf` branch descriptions, result-field descriptions, recovery hints, prompt snippets, and internal agent-native function tool descriptions may be instructional. Preserve concrete locator provenance, mutually exclusive-field rules, accepted and rejected identifier types, and cross-operation references that help an agent call the operation correctly; do not rewrite them into vague purpose-only copy.
+- Internal tools generated from operation specs, such as `darty_search_body` or `kasb_get_section`, may include practical invocation guidance: which identifiers are required, which fields are mutually exclusive, which identifier types are accepted or rejected, where a value came from, and which earlier command returns a required lookup value.
 
 ## Validation and error contract
 
@@ -276,7 +280,7 @@ Source packages should own domain and reusable agent messages:
 - validation failure messages,
 - retryability and recovery hints,
 - source warnings and execution error messages,
-- shared single-tool action descriptions, prompt snippets, and model-facing formatters when more than one host can reuse them.
+- shared single-tool action descriptions, prompt snippets, internal agent-native function tool descriptions, and model-facing formatters when more than one host can reuse them.
 
 These source-owned messages are user-facing and should be written in Korean, while preserving machine identifiers and proper nouns that should not be translated.
 
@@ -361,7 +365,7 @@ The Pi adapter should expose one package-level tool for the toolset unless there
 
 Required behavior:
 
-- The Pi tool `label` and `description` are user-facing Korean strings. The top-level Pi tool `description` stays purpose-only and does not teach the action protocol. Keep how-to-use text in `promptGuidelines`, `parameters`, `help`, and `command_help` responses. This does not forbid instructional descriptions inside the Pi parameter schema or returned operation schemas.
+- The Pi tool `label` and `description` are user-facing Korean strings. The top-level Pi tool `description` stays purpose-only and does not teach the action protocol. Keep how-to-use text in `promptGuidelines`, `parameters`, `help`, `command_help` responses, operation-derived schemas, and internal agent-native function tool descriptions. This does not forbid instructional descriptions inside the Pi parameter schema, returned operation schemas, or internal function tools.
 - `help` returns toolset-level guidance and operation summaries in the standard action output envelope.
 - `command_help` returns one operation spec in the standard action output envelope.
 - `validate` runs neutral validation without executing the operation and returns the standard action output envelope.

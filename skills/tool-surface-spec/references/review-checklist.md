@@ -20,9 +20,9 @@ Use this checklist after reading the target package and the surface spec.
 
 - [ ] The toolset factory can be imported without starting network work.
 - [ ] The toolset exposes `id`, `label`, `description`.
-- [ ] User-facing toolset, operation, and host-tool labels/descriptions are written in Korean, with proper nouns and stable machine ids preserved when appropriate.
-- [ ] The top-level toolset and host-tool descriptions are purpose-only and do not contain call sequences, action names, parameter hints, or other how-to-use instructions.
-- [ ] Operation specs, command help, JSON Schema descriptions, parameter descriptions, branch descriptions, and result-field descriptions still preserve concrete usage constraints, source provenance, mutually exclusive-field rules, rejected identifier types, and cross-operation references.
+- [ ] User-facing toolset, operation, host-tool, and internal agent-native function tool labels/descriptions are written in Korean, with proper nouns and stable machine ids preserved when appropriate.
+- [ ] Only top-level package/toolset descriptions and top-level host-tool descriptions, especially the single Pi extension tool description, are purpose-only and free of call sequences, action names, parameter hints, or other how-to-use instructions.
+- [ ] Operation specs, command help, JSON Schema property descriptions, parameter descriptions, `oneOf` branch descriptions, result-field descriptions, recovery hints, prompt snippets, and internal agent-native function tool descriptions still preserve concrete usage constraints, source provenance, mutually exclusive-field rules, accepted/rejected identifier types, and cross-operation references.
 - [ ] `help()` gives toolset-level guidance and limitations.
 - [ ] `listOperations()` returns stable canonical operation names.
 - [ ] `getCommandHelp(name)` returns one operation contract.
@@ -63,6 +63,7 @@ Use this checklist after reading the target package and the surface spec.
 - [ ] `run` success puts operation-specific data under `details.result` and includes `details.normalizedInput`.
 - [ ] Failures include stable `ok: false`, `action`, optional `command`, and structured `error`.
 - [ ] Prompt snippet/guidelines explain in Korean when and how to use the tool.
+- [ ] When internal function tools are derived from operations, such as `darty_search_body` or `kasb_get_section`, their descriptions preserve Korean practical guidance about required identifiers, mutually exclusive fields, accepted/rejected identifier types, source provenance, and cross-command lookup paths.
 - [ ] Adapter validation failures point the model toward help or command help.
 - [ ] Pi presentation text wraps neutral details and reuses neutral formatters/copy when another host can share the same text.
 
