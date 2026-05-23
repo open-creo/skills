@@ -20,6 +20,7 @@ Use this checklist after reading the target package and the surface spec.
 
 - [ ] The toolset factory can be imported without starting network work.
 - [ ] The toolset exposes `id`, `label`, `description`.
+- [ ] The toolset and host tool descriptions are purpose-only and do not contain call sequences, action names, parameter hints, or other how-to-use instructions.
 - [ ] `help()` gives toolset-level guidance and limitations.
 - [ ] `listOperations()` returns stable canonical operation names.
 - [ ] `getCommandHelp(name)` returns one operation contract.

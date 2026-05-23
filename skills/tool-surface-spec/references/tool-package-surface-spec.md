@@ -111,6 +111,7 @@ export type Toolset = {
 
 Required behavior:
 
+- `description` is a concise purpose statement: what the toolset is for and, if useful, its evidence/safety posture. Do not put call sequences, action names, parameter hints, or other how-to-use instructions in this field; put those in `help()`, operation specs, prompt snippets, guidelines, or parameter descriptions.
 - `help()` is network-free and lists what the toolset can do.
 - `listOperations()` is network-free and returns canonical operation summaries.
 - `getCommandHelp(name)` is network-free and returns the operation contract.
@@ -344,6 +345,7 @@ The Pi adapter should expose one package-level tool for the toolset unless there
 
 Required behavior:
 
+- The Pi tool `description` stays purpose-only and does not teach the action protocol. Keep how-to-use text in `promptGuidelines`, `parameters`, `help`, and `command_help` responses.
 - `help` returns toolset-level guidance and operation summaries in the standard action output envelope.
 - `command_help` returns one operation spec in the standard action output envelope.
 - `validate` runs neutral validation without executing the operation and returns the standard action output envelope.

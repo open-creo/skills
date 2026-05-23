@@ -45,6 +45,7 @@ The core idea is **one capability contract, many adapters**. Compatibility means
 ## Guardrails
 
 - Do not duplicate domain logic, operation descriptions, validation copy, recovery hints, result summaries, or reusable single-tool prompt/action copy across adapters.
+- Keep toolset and host tool descriptions purpose-only. Do not put call sequences, action names, parameter hints, or other how-to-use instructions in `description`; put them in help, operation specs, prompt snippets/guidelines, or parameter descriptions.
 - If Pi, web, or another host share the same single-tool action protocol, keep that shared copy and formatting in the neutral toolset and let adapters only wrap it in their host result shape.
 - Do not require agents to infer retry policy from JSON Schema alone; preserve validation/error recovery metadata.
 - Do not force one domain payload shape across all tools. Require compatible outer envelopes and typed errors; put project-specific data under the operation `result` payload and describe it with that operation's result schema.
