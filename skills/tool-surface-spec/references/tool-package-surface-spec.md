@@ -48,6 +48,19 @@ Naming guidance:
 - Use kebab-case canonical operation names: `search-company`, `view-report`, `list-items`.
 - Prefix host-specific function names only when the host requires it. Keep canonical operation names host-neutral.
 
+## User-facing language
+
+All user-facing messages should be written in Korean. This includes:
+
+- toolset, operation, and host-tool labels,
+- toolset, operation, and host-tool descriptions,
+- `help()` and `command_help` prose,
+- CLI `--help` and command help text,
+- Pi `content` text, `promptGuidelines`, parameter descriptions, and presentation text,
+- validation failure messages, recovery hints, warnings, execution error messages, result summaries, limitations, and citation guidance.
+
+Keep protocol identifiers stable even when adjacent user-facing text is Korean: package ids, export names, action enum values, JSON keys, schema property names, canonical operation names, and CLI flag names may remain code-like English when they are part of the machine contract. Proper nouns and product names may remain untranslated; add Korean descriptors when they improve clarity, for example `darty`/`Darty` as the package or product name but `DART 검색기` as a user-facing label.
+
 ## Layering model
 
 ```text
@@ -111,7 +124,7 @@ export type Toolset = {
 
 Required behavior:
 
-- `description` is a concise purpose statement: what the toolset is for and, if useful, its evidence/safety posture. Do not put call sequences, action names, parameter hints, or other how-to-use instructions in this field; put those in `help()`, operation specs, prompt snippets, guidelines, or parameter descriptions.
+- `label` and `description` are user-facing Korean strings. The top-level `Toolset.description` is a concise purpose statement: what the toolset is for and, if useful, its evidence/safety posture. Do not put call sequences, action names, parameter hints, or other how-to-use instructions in this field; put those in `help()`, operation specs, prompt snippets, guidelines, or parameter descriptions. This purpose-only rule applies to the top-level toolset description, not to every field named `description` elsewhere.
 - `help()` is network-free and lists what the toolset can do.
 - `listOperations()` is network-free and returns canonical operation summaries.
 - `getCommandHelp(name)` is network-free and returns the operation contract.
@@ -146,6 +159,7 @@ Rules:
 - Examples should be valid inputs that can be used by docs, tests, and agent prompts.
 - Limitations should state source drift, auth gaps, partial coverage, and known unsupported cases.
 - Result schemas should preserve enough structure for downstream automation.
+- Operation specs, input JSON Schemas, parameter descriptions, `oneOf` branch descriptions, and result-field descriptions may be instructional. Preserve concrete locator provenance, mutually exclusive-field rules, rejected identifier types, and cross-operation references that help an agent call the operation correctly; do not rewrite them into vague purpose-only copy.
 
 ## Validation and error contract
 
@@ -264,6 +278,8 @@ Source packages should own domain and reusable agent messages:
 - source warnings and execution error messages,
 - shared single-tool action descriptions, prompt snippets, and model-facing formatters when more than one host can reuse them.
 
+These source-owned messages are user-facing and should be written in Korean, while preserving machine identifiers and proper nouns that should not be translated.
+
 Host adapters should own only host/protocol messages:
 
 - malformed host parameter encoding that cannot be represented by the neutral toolset,
@@ -315,7 +331,7 @@ The CLI should be a thin adapter over the same operations.
 
 Required behavior:
 
-- `--help` and command help are human-readable text.
+- `--help` and command help are human-readable Korean text.
 - Successful command execution prints exactly one JSON response object to stdout.
 - Command failure prints exactly one JSON failure object to stdout and exits non-zero.
 - The CLI should not hide structured errors that the neutral toolset exposes.
@@ -345,12 +361,12 @@ The Pi adapter should expose one package-level tool for the toolset unless there
 
 Required behavior:
 
-- The Pi tool `description` stays purpose-only and does not teach the action protocol. Keep how-to-use text in `promptGuidelines`, `parameters`, `help`, and `command_help` responses.
+- The Pi tool `label` and `description` are user-facing Korean strings. The top-level Pi tool `description` stays purpose-only and does not teach the action protocol. Keep how-to-use text in `promptGuidelines`, `parameters`, `help`, and `command_help` responses. This does not forbid instructional descriptions inside the Pi parameter schema or returned operation schemas.
 - `help` returns toolset-level guidance and operation summaries in the standard action output envelope.
 - `command_help` returns one operation spec in the standard action output envelope.
 - `validate` runs neutral validation without executing the operation and returns the standard action output envelope.
 - `run` validates, executes, and returns the standard action output envelope with the operation payload under `details.result`.
-- Result content should be model-readable text, preferably formatted by reusable neutral helpers when another host can share it.
+- Result content should be model-readable Korean text, preferably formatted by reusable neutral helpers when another host can share it.
 - Full structured details must be preserved in `details` or an equivalent host-specific structured channel that keeps the same action-result fields.
 - Parameters should include an action enum, a command enum using canonical operation names, and an `inputJson` object.
 
@@ -404,6 +420,7 @@ Human review is still required for:
 - result usefulness,
 - reference quality,
 - warning quality,
+- Korean quality for user-facing labels, descriptions, help, prompt guidance, validation copy, warnings, summaries, and errors,
 - prompt guidance and whether reusable prompt/action copy is neutral-owned,
 - source drift and safety claims,
 - whether an adapter should exist at all.
@@ -413,7 +430,7 @@ Human review is still required for:
 A package follows this spec when:
 
 - all three required surfaces exist,
-- the neutral toolset owns operation discovery, validation, execution, reusable agent guidance, source-owned messages, result summaries, recovery hints, and errors,
+- the neutral toolset owns operation discovery, validation, execution, reusable Korean agent guidance, source-owned messages, result summaries, recovery hints, and errors,
 - CLI and Pi are thin adapters over the neutral toolset,
 - every operation has stable schemas and examples,
 - invalid input produces useful recovery metadata,

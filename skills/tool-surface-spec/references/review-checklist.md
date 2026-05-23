@@ -20,7 +20,9 @@ Use this checklist after reading the target package and the surface spec.
 
 - [ ] The toolset factory can be imported without starting network work.
 - [ ] The toolset exposes `id`, `label`, `description`.
-- [ ] The toolset and host tool descriptions are purpose-only and do not contain call sequences, action names, parameter hints, or other how-to-use instructions.
+- [ ] User-facing toolset, operation, and host-tool labels/descriptions are written in Korean, with proper nouns and stable machine ids preserved when appropriate.
+- [ ] The top-level toolset and host-tool descriptions are purpose-only and do not contain call sequences, action names, parameter hints, or other how-to-use instructions.
+- [ ] Operation specs, command help, JSON Schema descriptions, parameter descriptions, branch descriptions, and result-field descriptions still preserve concrete usage constraints, source provenance, mutually exclusive-field rules, rejected identifier types, and cross-operation references.
 - [ ] `help()` gives toolset-level guidance and limitations.
 - [ ] `listOperations()` returns stable canonical operation names.
 - [ ] `getCommandHelp(name)` returns one operation contract.
@@ -28,6 +30,7 @@ Use this checklist after reading the target package and the surface spec.
 - [ ] `execute(name, input, { signal })` runs one operation, respects cancellation, and returns a payload described by that operation's `resultJsonSchema`.
 - [ ] `serializeError(error)` preserves structured error fields.
 - [ ] Domain messages, result summaries, validation copy, recovery hints, and reusable single-tool agent guidance live in the neutral toolset/capability layer rather than host adapters.
+- [ ] User-facing help, operation descriptions, validation/error messages, recovery hints, warnings, summaries, limitations, citation guidance, and prompt guidance are written in Korean.
 
 ## Operation contracts
 
@@ -43,7 +46,7 @@ Use this checklist after reading the target package and the surface spec.
 ## CLI adapter
 
 - [ ] CLI flags map to operation inputs without changing semantics.
-- [ ] Help is human-readable.
+- [ ] Help is human-readable Korean text.
 - [ ] Successful command execution emits one JSON object to stdout.
 - [ ] Command failure emits one JSON object to stdout and exits non-zero.
 - [ ] CLI errors preserve neutral error metadata.
@@ -54,12 +57,12 @@ Use this checklist after reading the target package and the surface spec.
 - [ ] Actions include `help`, `command_help`, `validate`, and `run`.
 - [ ] `command` uses canonical operation names.
 - [ ] `inputJson` carries operation input.
-- [ ] Model-readable text and structured details are both returned.
+- [ ] Korean model-readable text and structured details are both returned.
 - [ ] Every action returns the standard outer shape: `content[]` plus `details`.
 - [ ] Successful `details` include stable `ok: true`, `action`, and action-specific fields (`help`, `commandHelp`, `validation`, or `result`).
 - [ ] `run` success puts operation-specific data under `details.result` and includes `details.normalizedInput`.
 - [ ] Failures include stable `ok: false`, `action`, optional `command`, and structured `error`.
-- [ ] Prompt snippet/guidelines explain when and how to use the tool.
+- [ ] Prompt snippet/guidelines explain in Korean when and how to use the tool.
 - [ ] Adapter validation failures point the model toward help or command help.
 - [ ] Pi presentation text wraps neutral details and reuses neutral formatters/copy when another host can share the same text.
 
