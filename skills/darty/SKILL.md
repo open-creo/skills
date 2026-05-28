@@ -21,7 +21,7 @@ Use this skill when the user needs to search, inspect, or summarize Korean corpo
 
 Darty is a read-only tool that turns DART disclosure search and report-viewing screens into structured output that agents can inspect, summarize, and cite in follow-up work.
 
-The CLI source is available in this workspace at `../darty` when that sibling checkout exists. The CLI is published on npm as `@sjunepark/darty` and exposes the `darty` command. The package also provides reusable integration entry points, but agents should prefer the CLI unless the host environment explicitly needs a package API.
+The CLI source is available in this workspace at `../darty` when that sibling checkout exists. The CLI is published on npm as `@sjunepark/darty` and exposes the `darty` command. Agents should use Darty through the CLI and treat the command's own help as the public integration surface.
 
 ## Installing or Finding Darty
 
