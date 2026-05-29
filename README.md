@@ -41,7 +41,7 @@ Use the Landprice CLI for read-only Korean official land price lookup from Realt
 
 ### tool-surface-spec
 
-Use the Tool Surface Spec skill to design, review, scaffold, or validate CLI-first reusable agent-tool packages with predictable help, stdout/stderr, exit-code, and structured JSON behavior.
+Use the Tool Surface Spec skill to design, review, scaffold, or validate reusable agent-tool packages with both a CLI and a runtime-neutral toolset SDK, including predictable help, stdout/stderr, exit-code, operation discovery, validation, and structured JSON behavior.
 
 ## Layout
 
