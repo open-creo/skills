@@ -81,7 +81,7 @@ Reusable agent-tool packages should be **English-native for the agent/control pl
 - option descriptions and examples,
 - validation failure messages, recovery hints, warnings, execution error messages, result summaries, limitations, and citation guidance.
 
-Do not maintain three parallel variants such as Korean, English, and agent-facing copy. The reusable package provides one English model-facing contract. Product hosts such as Creo own Korean UI display copy in their presentation layer when they need localized labels, descriptions, toasts, panels, or dialogs.
+Do not maintain three parallel variants such as Korean, English, and agent-facing copy. The reusable package provides one English model-facing contract. Product hosts own localized UI display copy in their presentation layer when they need localized labels, descriptions, toasts, panels, or dialogs.
 
 Preserve source-native Korean domain terms when they are official identifiers or the terms users and source systems actually use. Do not force awkward translations for terms such as `사업보고서`, `감사보고서`, `반기보고서`, `분기보고서`, `표준지 공시지가`, `개별공시지가`, `법정동`, `공시지가`, and source-specific report or section titles. When a Korean term may be unfamiliar to the model, add a short English gloss on first mention, for example `사업보고서 (annual business report)` or `개별공시지가 (individual publicly announced land price)`.
 
@@ -187,13 +187,17 @@ Rules:
 - Limitations should state source drift, auth gaps, partial coverage, and known unsupported cases.
 - Result schemas should preserve enough structure for downstream automation.
 - Operation specs, input JSON Schemas, property and parameter descriptions, `oneOf` branch descriptions, result-field descriptions, recovery hints, prompt snippets, and internal agent-native function tool descriptions may be instructional. Preserve concrete locator provenance, mutually exclusive-field rules, accepted and rejected identifier types, and cross-operation references that help an agent call the operation correctly; do not rewrite them into vague purpose-only copy.
-- Internal tools generated from operation specs, such as `darty_search_body` or `kasb_get_section`, may include practical invocation guidance: which identifiers are required, which fields are mutually exclusive, which identifier types are accepted or rejected, where a value came from, and which earlier command returns a required lookup value.
+- Internal tools generated from operation specs, such as `example_search_record` or `example_get_section`, may include practical invocation guidance: which identifiers are required, which fields are mutually exclusive, which identifier types are accepted or rejected, where a value came from, and which earlier command returns a required lookup value.
 
 ## Validation and error contract
 
 Validation failures should be structured and recoverable:
 
 ```ts
+export type ValidationRecoveryAction =
+  | { readonly kind: "inspect_tool_help" }
+  | { readonly kind: "inspect_command_help"; readonly operationName: string };
+
 export type ValidationFailure = {
   readonly code:
     | "missing_parameter"
@@ -206,18 +210,29 @@ export type ValidationFailure = {
   readonly reason?: string;
   readonly expected?: string;
   readonly actual?: unknown;
-  readonly recoveryHint?: string;
   readonly exampleInput?: Record<string, unknown>;
-  readonly retryable: boolean;
-  readonly recoveryAction?:
-    | { readonly kind: "inspect_tool_help" }
-    | { readonly kind: "inspect_command_help"; readonly operationName: string };
+  readonly recoveryHint?: string;
+  readonly recoveryAction?: ValidationRecoveryAction;
+  readonly recoverable: boolean;
+  readonly retryable?: boolean;
 };
 
 export type ValidationResult =
   | { readonly ok: true; readonly input: Record<string, unknown> }
   | { readonly ok: false; readonly error: ValidationFailure };
 ```
+
+`recoverable` means a caller can repair the input by following the structured recovery metadata. `retryable` means the same request might succeed later, such as after a transient source, network, rate-limit, or availability issue. Do not mark missing parameters, unknown parameters, malformed identifiers, or non-object input as `retryable` merely because the caller can submit a different request. Existing packages that already use `retryable` to mean input-repairable should document it as a compatibility alias and prefer `recoverable` for new validation failures.
+
+Validation metadata should include the failed `operationName` when known, the failed `parameter` when the failure is field-scoped, a concise `reason`, the `expected` shape, the safe `actual` value when it does not expose secrets or excessive payloads, and an `exampleInput` when one can guide the next call. `recoveryHint` is human/model-facing copy; `recoveryAction` is the machine-readable next step. Hosts and adapters should not parse localized prose, CLI help text, freeform `message`, or `recoveryHint` to decide whether to inspect tool help, inspect command help, repair input, or retry later.
+
+Common validation recovery actions:
+
+- Unknown operation or command: use `code: "invalid_request"`, `recoverable: true`, and `recoveryAction: { kind: "inspect_tool_help" }`.
+- Non-object input for a known operation: use `code: "invalid_request"`, `operationName`, `expected`, `recoverable: true`, and `recoveryAction: { kind: "inspect_command_help", operationName }`.
+- Missing required parameter: use `code: "missing_parameter"`, `operationName`, `parameter`, `expected`, `exampleInput`, `recoverable: true`, and command-scoped recovery.
+- Invalid identifier or invalid parameter value: use `code: "invalid_parameter"`, `operationName`, `parameter`, `reason`, `expected`, safe `actual`, and command-scoped recovery.
+- Unknown parameter: use `code: "unknown_parameter"`, `operationName`, `parameter`, `reason`, `expected` or `exampleInput`, and command-scoped recovery.
 
 Execution errors should be serializable:
 
@@ -226,10 +241,12 @@ export type SerializedError = {
   readonly name: string;
   readonly message: string;
   readonly code?: string;
+  readonly recoverable?: boolean;
   readonly retryable?: boolean;
   readonly parameter?: string;
   readonly sourceUrl?: string;
   readonly recoveryHint?: string;
+  readonly recoveryAction?: ValidationRecoveryAction;
   readonly operationName?: string;
 };
 ```
@@ -307,7 +324,14 @@ Failure envelopes should generally look like this:
     "code": "missing_parameter",
     "message": "companyName is required.",
     "parameter": "companyName",
-    "retryable": true,
+    "expected": "Non-empty company name string.",
+    "exampleInput": { "companyName": "Example Corp" },
+    "recoverable": true,
+    "retryable": false,
+    "recoveryAction": {
+      "kind": "inspect_command_help",
+      "operationName": "search-company"
+    },
     "recoveryHint": "Run `example-tool search-company --help` and provide --company-name."
   },
   "metadata": { "source": "cli" },
@@ -325,7 +349,7 @@ Source packages should own domain and reusable agent messages:
 - command descriptions derived from operation specs,
 - limitations and citation guidance,
 - validation failure messages,
-- retryability and recovery hints,
+- recoverability, retryability, and recovery hints,
 - source warnings and execution error messages,
 - shared single-tool action descriptions, prompt snippets, internal agent-native function tool descriptions, and model-facing formatters when more than one adapter can reuse them.
 
@@ -346,7 +370,9 @@ type AdapterError = {
   readonly origin: "adapter" | "source";
   readonly code: string;
   readonly message: string;
-  readonly retryable: boolean;
+  readonly recoverable?: boolean;
+  readonly retryable?: boolean;
+  readonly recoveryAction?: ValidationRecoveryAction;
   readonly repair?: unknown;
   readonly details?: Record<string, unknown>;
 };
@@ -366,8 +392,9 @@ Examples:
 
 Required host behavior:
 
-- Preserve source-owned validation and execution error metadata.
+- Preserve source-owned validation and execution error metadata, including recovery actions and parameter-level validation details.
 - Distinguish host/protocol errors from source-owned errors in the host output shape.
+- Use machine-readable fields such as `recoverable`, `retryable`, `recoveryAction`, `operationName`, and `parameter` for recovery decisions instead of parsing localized prose, CLI help text, `message`, or `recoveryHint`.
 - Avoid duplicate host-authored warnings around source-owned failures.
 - Forward `AbortSignal` when the host supports cancellation.
 - Keep host UI activity separate from canonical operation results.
@@ -385,13 +412,14 @@ Good automated checks:
 - The neutral toolset factory imports and returns the required functions.
 - `help()`, `listOperations()`, and `getCommandHelp()` are network-free.
 - Operation specs include schemas, examples, limitations, and result summaries.
-- Unknown operations produce structured validation failures.
+- Unknown operations produce structured validation failures with machine-readable recovery metadata.
+- Known validation failures, including non-object input, missing required parameters, invalid identifiers, and unknown parameters, return structured recovery metadata from `validateInput()`.
 - Example inputs pass `validateInput()`.
 - `serializeError()` returns a structured error.
 - `--help` exits 0 and prints help text.
 - Invalid CLI usage exits non-zero and prints exactly one JSON failure object to stdout.
 - A known safe success command, when supplied to the checker, exits 0 and prints exactly one JSON success object to stdout.
-- JSON failure objects preserve structured error metadata.
+- JSON failure objects preserve structured error metadata, including recoverability, recovery actions, operation names, parameter names, expected/actual details when safe, examples, and recovery hints.
 - Command examples in help are covered by project-specific tests when practical.
 
 Human review is still required for:
@@ -419,7 +447,7 @@ A package follows this spec when:
 - successful command output is one structured JSON object on stdout,
 - failed command output is one structured JSON failure object on stdout plus a non-zero exit,
 - stderr cannot corrupt stdout parsing,
-- invalid input produces useful recovery metadata,
+- invalid input produces useful structured recovery metadata without requiring hosts to parse prose,
 - execution supports cancellation,
 - results preserve references/warnings/metadata where relevant,
 - automated CLI and toolset conformance checks pass,

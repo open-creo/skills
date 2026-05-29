@@ -19,9 +19,10 @@ Use this checklist after reading the target package and the CLI + neutral toolse
 - [ ] `listOperations()` returns stable kebab-case operation names with useful labels and descriptions.
 - [ ] Each operation spec includes semantic input schema, result schema, required input keys, examples, limitations, and result summary.
 - [ ] `validateInput()` is network-free, rejects unknown/invalid inputs, and returns normalized input for valid examples.
-- [ ] Unknown operations return a structured validation failure.
+- [ ] Unknown operations return a structured validation failure with `recoverable: true` and `recoveryAction: { kind: "inspect_tool_help" }` or an equivalent machine-readable path.
+- [ ] Known validation failures return structured recovery metadata, including `operationName`, relevant `parameter`, `reason`, `expected`, safe `actual`, `exampleInput`, `recoveryHint`, `recoveryAction`, and `recoverable` where applicable.
 - [ ] `execute()` runs one operation, accepts normalized inputs, and respects `ToolRunContext.signal` when the runtime supports cancellation.
-- [ ] `serializeError()` preserves name, message, code, retryability, parameter, source URL/reference, recovery hint, and operation name when available.
+- [ ] `serializeError()` preserves name, message, code, recoverability, retryability, recovery action, parameter, source URL/reference, recovery hint, and operation name when available.
 
 ## Source of truth
 
@@ -70,10 +71,20 @@ Use this checklist after reading the target package and the CLI + neutral toolse
 
 - [ ] Failure JSON and toolset validation results include a clear failure marker such as `ok: false` or an equivalent stable shape.
 - [ ] Failures include a structured `error` object or equivalent typed error field.
-- [ ] Error metadata includes stable codes, messages, retryability, parameter names, expected/actual details, source references, or recovery hints where relevant.
-- [ ] Validation failures point the model toward `--help`, command-level help, or `getCommandHelp()`.
+- [ ] Error metadata includes stable codes, messages, recoverability, retryability, parameter names, expected/actual details, source references, or recovery hints where relevant.
+- [ ] Validation failures distinguish input-repair `recoverable` cases from same-input-later `retryable` cases.
+- [ ] Validation failures point the model toward `--help`, command-level help, or `getCommandHelp()` through machine-readable `recoveryAction` values.
+- [ ] Hosts and adapters do not need to parse localized prose, CLI help text, freeform `message`, or `recoveryHint` to choose a recovery path.
 - [ ] Source-owned validation and execution error metadata is preserved instead of rewritten into generic prose.
 - [ ] Adapter/process-level errors are distinguishable from source/upstream errors.
+
+## Validation recovery cases
+
+- [ ] Unknown command or operation returns a structured validation failure with `code: "invalid_request"`, `recoverable: true`, and a tool-help recovery action.
+- [ ] Non-object input returns a structured validation failure with `code: "invalid_request"`, an expected object shape, and command-help recovery when the operation is known.
+- [ ] Missing required parameters return `code: "missing_parameter"`, the missing `parameter`, expected shape, an example input when practical, and command-help recovery.
+- [ ] Invalid identifiers or invalid parameter values return `code: "invalid_parameter"`, the failed `parameter`, a concrete `reason`, expected shape, safe actual value when useful, and command-help recovery.
+- [ ] Unknown parameters return `code: "unknown_parameter"`, the unexpected `parameter`, valid-shape guidance through `expected` or `exampleInput`, and command-help recovery.
 
 ## Capability layering
 
