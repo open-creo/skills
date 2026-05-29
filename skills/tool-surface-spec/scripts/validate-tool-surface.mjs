@@ -65,7 +65,7 @@ const usage = () => `Usage:
   node validate-tool-surface.mjs [package-dir] [options]
 
 Options:
-  --id <id>                         Expected toolset id, package name, or CLI bin name.
+  --id <id>                         Expected neutral toolset id.
   --toolset-factory <exportName>     Explicit ./toolset factory export.
   --command <command-or-path>        CLI command/path to run for smoke checks.
   --command-args <json-array>        Args inserted after --command before smoke-test args.
@@ -487,15 +487,6 @@ const validatePackageShape = (reporter, root, pkg, args) => {
 
   const binEntries = getBinEntries(pkg);
   reporter.check(binEntries.length > 0, "package has at least one CLI bin");
-
-  if (args.id !== undefined) {
-    const binNames = binEntries.map(([name]) => name);
-    if (pkg.name === args.id || binNames.includes(args.id)) {
-      reporter.pass(`package name or CLI bin matches --id ${args.id}`);
-    } else {
-      reporter.warn(`--id ${args.id} did not match package name or CLI bin; checking toolset id separately`);
-    }
-  }
 
   for (const [, target] of binEntries) {
     reporter.check(existsSync(resolve(root, target)), `CLI bin file exists: ${target}`);
